@@ -147,31 +147,20 @@ Na bancada de simulação pelo aplicativo Woke ("ChargeGrid conectando..."), o p
 
 O fluxo de funcionamento descreve a jornada completa desde a chegada do veículo elétrico à vaga até o encerramento da sessão de carga, integrando a bancada física (simulada via ESP32), o backend em nuvem (Firebase) e a interface mobile do motorista.
 
-```mermaid
-flowchart TD
-    A["🚗 Chegada do Veículo & Conexão do Cabo CCS"] --> B["📟 Leitura EVCCID & Telemetria Inicial<br>(Simulada pelo ESP32)"]
-    B --> C["☁️ Conexão Firebase<br>(Criação do Registro de Recarga: status 'Pendente')"]
-    C --> D["📱 Identificação da Sessão & Checkout no App"]
-    D --> E["💳 Confirmação do Pagamento (Pix / Sem Parar)"]
-    E --> F["☁️ Atualização no Firebase<br>(Status alterado para 'Pagamento Confirmado / Liberado')"]
-    F --> G["🔌 ESP32 Identifica Liberação em Nuvem<br>& Aciona Início da Recarga"]
-    G --> H["📊 Telemetria Contínua em Tempo Real<br>(ESP32 ➔ Firebase ➔ App / Dashboard B2B)"]
-    H --> I{"⏹️ Condição de Parada Ativa?"}
-    I -- "Não (Recarregando)" --> H
-    I -- "Sim (Interrupção Manual pelo App OU SOC Atinge Meta)" --> J["🏁 Encerramento da Recarga & Envio do Comprovante"]
 
-```
+<img width="1580" height="889" alt="Fluxo de carregamento goodwe" src="https://github.com/user-attachments/assets/08140eef-bae4-48f3-9da4-86a723c66cc7" />
 
-**Detalhamento do Fluxo:**
+
+### **Detalhamento do Fluxo:**
 
 | Etapa | Ação / Componente | O que acontece no sistema |
 | --- | --- | --- |
-| **1. Conexão & Identificação** | Veículo ➔ ESP32 | O motorista conecta o cabo. O microcontrolador ESP32 lê o ID do veículo (EVCCID) e detecta a presença física na vaga. |
-| **2. Registro de Recarga** | ESP32 ➔ Firebase | O ESP32 envia os dados iniciais do ponto de carga e cria um novo documento de sessão no Firebase Realtime Database com status `pendente`. |
-| **3. Notificação & Pagamento** | App Mobile ➔ Firebase | O aplicativo identifica a vaga conectada, exibe o valor/tarifa e solicita a confirmação do pagamento pelo motorista (ex.: Pix). |
-| **4. Sinalização de Liberação** | Firebase ➔ ESP32 | Com o pagamento confirmado, o Firebase atualiza a flag da sessão para `liberado`. O ESP32, escutando a nuvem em tempo real, detecta a mudança e aciona os relés de carregamento. |
-| **5. Telemetria em Tempo Real** | ESP32 ➔ Nuvem ➔ App | Durante a recarga, o ESP32 transmite continuamente os parâmetros de SOC (%), potência (kW), corrente e consumo acumulado (kWh). Os dados sobem para o Firebase e são exibidos instantaneamente na tela do aplicativo e no Dashboard B2B. |
-| **6. Encerramento Flexível** | App / ESP32 ➔ Firebase | A recarga pode ser finalizada automaticamente ao atingir 100% (ou a meta estipulada) ou **interrompida manualmente a qualquer momento pelo aplicativo**, garantindo controle total ao usuário. |
+| **Conexão & Identificação** | Veículo&nbsp;➔&nbsp;ESP32 | O motorista conecta o cabo. O microcontrolador ESP32 lê o ID do veículo (EVCCID) e detecta a presença física na vaga. |
+| **Registro de Recarga** | ESP32&nbsp;➔&nbsp;Firebase | O ESP32 envia os dados iniciais do ponto de carga e cria um novo documento de sessão no Firebase Realtime Database com status `pendente`. |
+| **Notificação & Pagamento** | App&nbsp;Mobile&nbsp;➔&nbsp;Firebase | O aplicativo identifica a vaga conectada, exibe o valor/tarifa e solicita a confirmação do pagamento pelo motorista (ex.: Pix). |
+| **Sinalização de Liberação** | Firebase&nbsp;➔&nbsp;ESP32 | Com o pagamento confirmado, o Firebase atualiza a flag da sessão para `liberado`. O ESP32, escutando a nuvem em tempo real, detecta a mudança e aciona os relés de carregamento. |
+| **Telemetria em Tempo Real** | ESP32&nbsp;➔&nbsp;Nuvem&nbsp;➔&nbsp;App | Durante a recarga, o ESP32 transmite continuamente os parâmetros de SOC (%), potência (kW), corrente e consumo acumulado (kWh). Os dados sobem para o Firebase e são exibidos instantaneamente na tela do aplicativo e no Dashboard B2B. |
+| **Encerramento Flexível** | App&nbsp;/&nbsp;ESP32&nbsp;➔&nbsp;Firebase | A recarga pode ser finalizada automaticamente ao atingir 100% (ou a meta estipulada) ou **interrompida manualmente a qualquer momento pelo aplicativo**, garantindo controle total ao usuário. |
  
 ---
 ### 4.1 Interfaces e Protótipos Funcionais
@@ -247,11 +236,6 @@ A validação do modelo financeiro para a instalação de uma estação de 4 vag
 | **Investimento Inicial (CAPEX)** | R$ 60.000,00 *(Hardware GoodWe, ESP32 e instalação)* |
 | **Receita Líquida Mensal Estimada** | R$ 4.455,00 / mês *(Margem sob recarga e tarifa dinâmica)* |
 | **Tempo de Retorno (Payback)** | **14 meses** |
-
-### 6.3 Roadmap de Desenvolvimento
-* **Agosto (Concluído):** Desenvolvimento do firmware ESP32, modelagem da base Firebase, dashboard B2B e algoritmo de rateio.
-* **Setembro (Em andamento):** Montagem da maquete física de 4 vagas funcionais para testes de medição direta.
-* **Outubro (Planejado):** Integração dos serviços de pagamento e rotas nativas com ecossistemas automotivos **Android Auto** e **Apple CarPlay**.
 
 ---
 
