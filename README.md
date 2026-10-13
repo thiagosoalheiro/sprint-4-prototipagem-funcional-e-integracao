@@ -4,7 +4,7 @@ Gerenciamento inteligente de demanda para estações de recarga de veículos el�
  
 > 🎥 <a href="https://youtu.be/ggT8hUnfNXI?si=upFxEk8xvHdklanF">**Clique aqui para ver o vídeo pitch!**</a> 
 
-> 🏫 **Disciplina: Pensamento Computacional e Automação com Python e Soluções em Energias Renováveis e Sustentáveis** / **Sprint 3 — Prototipagem Funcional e Integração**
+> 🏫 **Disciplina: Pensamento Computacional e Automação com Python e Soluções em Energias Renováveis e Sustentáveis** / **Sprint 4 — Solução Final Integrada e Inovadora GoodWe**
  
 ---
  
@@ -203,6 +203,21 @@ Para homologação das regras de *Load Balancing* e protocolo de comunicação, 
 
 <img width="771" height="522" alt="image" src="https://github.com/user-attachments/assets/55349b7f-9b4c-4b5b-ae70-c50c95e4f244" />
 
+### 4.2 Integração entre os Sistemas
+
+Na solução final, cada sistema conversa com os demais por uma interface bem definida. O **Firebase** funciona como ponto central de sincronização, e é isso que permite que a bancada, o painel B2B e o aplicativo reajam ao mesmo dado ao mesmo tempo:
+
+| Origem ➔ Destino | Interface / Protocolo | O que trafega |
+| --- | --- | --- |
+| Veículo ➔ Carregador (HCA G2 / ESP32 na bancada) | CCS + ISO 15118 (EVCCID) | Identificação do veículo, conexão física do cabo |
+| ESP32 ➔ Firebase | Firebase Realtime Database | Sessão de recarga (`pendente` / `liberado`), SOC, potência, corrente, kWh acumulado |
+| Firebase ➔ ESP32 | Escuta em tempo real | Liberação da sessão e comandos de Iniciar/Parar, que acionam os relés |
+| Aplicativo do motorista ↔ Firebase | Firebase Authentication + Realtime Database | Login verificado por e-mail, confirmação de Pix, telemetria da recarga, interrupção manual |
+| Dashboard B2B ↔ Firebase | Realtime Database (`site/app.js`) | Geração solar, demanda total, limite do disjuntor, estado de cada vaga e comandos globais da estação |
+| Aplicativo ➔ Waze | Rota externa | Navegação do motorista até a estação |
+
+Com isso, uma única ação (por exemplo, o motorista confirmar o Pix) atravessa a cadeia inteira: o aplicativo atualiza o Firebase, o ESP32 detecta a liberação, aciona o relé e passa a enviar a telemetria que o aplicativo e o dashboard exibem em tempo real.
+
 ---
 
 ## 5. Justificativa Técnica das Escolhas
@@ -237,11 +252,43 @@ A validação do modelo financeiro para a instalação de uma estação de 4 vag
 | **Receita Líquida Mensal Estimada** | R$ 4.455,00 / mês *(Margem sob recarga e tarifa dinâmica)* |
 | **Tempo de Retorno (Payback)** | **14 meses** |
 
+### 6.3 Resultados Quantitativos de Eficiência e Sustentabilidade
+
+Os números abaixo combinam **dados medidos no protótipo** (potência, rateio, limite do disjuntor) com **estimativas calculadas** a partir das premissas do modelo financeiro (90 kWh vendidos por dia · 50% da energia vinda do sol · margem média de R$ 1,65/kWh). As estimativas estão identificadas como tal e a memória de cálculo está logo abaixo da tabela.
+
+| Indicador | Resultado | Tipo |
+|---|---|---|
+| Demanda sem gerenciamento | 44 kW (**110%** do limite de 40 kW) | Medido no protótipo |
+| Demanda com rateio automático | 32 kW (**80%** do limite, com 8 kW de folga) | Medido no protótipo |
+| Redução de pico de demanda | **−27,3%** (44 kW → 32 kW) | Calculado sobre dado medido |
+| Taxa de recarga do veículo mais descarregado (SOC 34%) | 11,0 kW contra 8,0 kW numa divisão igualitária (**+37,5%**) | Calculado sobre dado medido |
+| Energia entregue por ano | 32.850 kWh | Estimativa |
+| Energia solar usada por ano (Solar-First, 50%) | 16.425 kWh | Estimativa |
+| CO₂ evitado pelo uso de energia solar | ≈ **632 kg CO₂/ano** (≈ 475 kg com o fator de 2025) | Estimativa |
+| CO₂ evitado em relação a abastecer os mesmos veículos com gasolina | ≈ **40 t CO₂/ano** | Estimativa |
+| Receita líquida mensal | R$ 4.455 (90 kWh × 30 dias × R$ 1,65) | Calculado |
+| Payback | 60.000 ÷ 4.455 ≈ 13,5 → **14 meses** | Calculado |
+
+**Memória de cálculo**
+
+- **Energia:** 90 kWh/dia × 365 dias = **32.850 kWh/ano**; 50% solar = **16.425 kWh/ano** vindos do sol e 16.425 kWh da rede.
+- **CO₂ da rede:** o fator médio do Sistema Interligado Nacional (SIN) foi de **38,5 kg CO₂/MWh em 2023** (dado do MCTI) e de 28,9 kg CO₂/MWh em abril de 2025. Com 38,5 kg/MWh: 32.850 kWh na rede emitiriam ≈ 1.265 kg/ano; com Solar-First, apenas 16.425 kWh vêm da rede (≈ 632 kg/ano). A diferença, **≈ 632 kg CO₂/ano**, é o CO₂ evitado pelo uso do sol. Com o fator de abril de 2025 o valor cai para ≈ 475 kg/ano.
+- **Comparação com gasolina** (premissas adotadas pelo grupo: consumo de 0,15 kWh/km, carro a gasolina de 12 km/L e 2,23 kg CO₂ por litro de gasolina): 90 kWh ÷ 0,15 = 600 km/dia; 600 ÷ 12 = 50 L/dia; 50 × 2,23 = 111,5 kg CO₂/dia ≈ **40,7 t/ano**. Os mesmos 600 km rodados por veículos abastecidos na estação com Solar-First geram ≈ 0,63 t/ano, ou seja, uma diferença de ≈ **40 t CO₂/ano**.
+- **Divisão igualitária** de 32 kW entre 4 vagas = 8,0 kW por vaga; o rateio por SOC entrega 11,0 kW à Vaga 01: 11,0 ÷ 8,0 = 1,375 (**+37,5%**).
+
+### 6.4 Resultados Qualitativos
+
+- **Operação sem intervenção manual:** o rateio, a priorização por SOC, a liberação da sessão após o Pix e o encerramento por meta acontecem automaticamente, sem que o operador do shopping precise agir.
+- **Todas as vagas atendidas ao mesmo tempo:** em vez de bloquear vagas ou desarmar o disjuntor, os quatro veículos recebem energia simultaneamente, cada um com a potência que realmente consegue aproveitar.
+- **Transparência para o motorista:** o aplicativo mostra potência, progresso da bateria, tempo decorrido e tarifa, e permite interromper a recarga a qualquer momento.
+- **Visão completa para o operador:** o dashboard B2B mostra geração solar, demanda total, limite do disjuntor e o estado de cada vaga em tempo real, com comandos por vaga e globais.
+- **Privacidade comprovável:** a identificação por EVCCID dispensa câmeras e leitura de placa, e o isolamento por `auth.uid` impede que um motorista acesse dados de outro.
+
 ---
 
 ## 7. Conexão com os Conteúdos da Disciplina
 
-O desenvolvimento da **Sprint 3** consolidou os conceitos teóricos e práticos abordados nas matérias da matriz curricular:
+O desenvolvimento das **Sprints 3 e 4** consolidou os conceitos teóricos e práticos abordados nas matérias da matriz curricular:
 
 1. **Pensamento Computacional e Automação com Python:**
    * Implementação de estruturas lógicas condicionais e algoritmos de otimização para o cálculo proporcional de rateio de potência.
@@ -253,6 +300,146 @@ O desenvolvimento da **Sprint 3** consolidou os conceitos teóricos e práticos 
 
 3. **Internet das Coisas (IoT) e Sistemas Embarcados:**
    * Programação de microcontroladores ESP32 utilizando bibliotecas de comunicação assíncrona, integração de sensores/atuadores e envio de telemetria via nuvem.
+
+4. **Eficiência Energética e Análise de Impacto (Sprint 4):**
+   * Uso de fatores de emissão oficiais (MCTI) para converter energia solar consumida em CO₂ evitado, aplicando o raciocínio de inventário de emissões visto na disciplina.
+   * Análise de viabilidade técnica e econômica (CAPEX, receita líquida, payback) para sustentar a decisão de investimento de um estabelecimento comercial.
+   * Raciocínio de eficiência aplicado à bateria do veículo: respeitar a curva CC-CV reduz perdas por aquecimento e preserva a vida útil do armazenamento.
+
+---
+
+## 8. Alinhamento ao Desafio GoodWe
+
+O desafio proposto pela GoodWe é transformar equipamentos de uso residencial em uma solução comercial de recarga, com gerenciamento de potência, cobrança automática e interface para o estabelecimento. A tabela mostra, ponto a ponto, como cada parte do ChargeGrid responde a ele:
+
+| Ponto-chave do desafio | Como o ChargeGrid resolve | Onde ver |
+|---|---|---|
+| **Levar dispositivos domésticos para o uso comercial** | Os carregadores HCA G2, o inversor híbrido e a bateria SEC1000S são os mesmos equipamentos da linha GoodWe. A adaptação para uso comercial vem da camada de software (EVSE Manager B2B, rateio, cobrança), sem exigir hardware proprietário novo. | Seções 3 e 4.1 |
+| **Gerenciar a demanda de potência** (44 kW pedidos contra 40 kW de disjuntor) | O rateio proporcional por SOC reduz a demanda para 32 kW (80% do limite) e atende as 4 vagas ao mesmo tempo. A previsão de 60 minutos do GoodWezinho AI antecipa picos antes que o disjuntor seja pressionado. | Seções 2.2, 2.3 e 6.1 |
+| **Automatizar a cobrança** | O fluxo Veículo ➔ Conta ➔ Pagamento é desacoplado: o EVCCID identifica o carro, a conta registra o motorista e o Pix libera a sessão (`pendente` ➔ `liberado`). O hardware só energiza o relé depois da confirmação. | Seções 1, 4 e 4.1.B |
+| **Criar interfaces para o estabelecimento e para o motorista** | O dashboard B2B dá ao shopping monitoramento e comandos (por vaga e globais). O aplicativo dá ao motorista mapa, rota via Waze, acompanhamento em tempo real e interrupção manual. | Seções 4.1.A e 4.1.B |
+| **Usar energia renovável e armazenamento** | A lógica Solar-First consome primeiro o que o inversor gera, a bateria SEC1000S guarda excedente para horários de pico e a rede entra só como complemento. | Seções 1, 3 e 5 |
+| **Garantir segurança e privacidade** | ISO 15118 com certificados PKI, ausência de câmeras e leitura de placa, Firebase Authentication com e-mail verificado e Security Rules que isolam os dados de cada motorista. | Seções 4.1.B e 5 |
+| **Provar viabilidade comercial** | Investimento de R$ 60.000, receita líquida de R$ 4.455/mês e payback de 14 meses, sem obras de ampliação da rede elétrica. | Seções 6.2 e 6.3 |
+
+**Alinhamento à disciplina:** o projeto exercita, em uma única solução, os três eixos da disciplina: automação com Python e lógica de otimização (rateio e previsão), energias renováveis e sustentáveis (solar, armazenamento, Peak Shaving e Load Balancing) e IoT com sistemas embarcados (ESP32 e telemetria em nuvem). O detalhamento está na seção 7.
+
+---
+
+## 9. Avaliação Crítica de Sustentabilidade e Inovação
+
+### 9.1 Como uma recarga mais eficiente desgasta menos o meio ambiente
+
+A ideia central de sustentabilidade do ChargeGrid é simples: **recarregar de forma mais eficiente significa usar menos energia, menos equipamento e menos infraestrutura para entregar o mesmo serviço**. Isso acontece em cinco frentes:
+
+1. **Recarga que respeita a bateria do veículo.** Ao chegar perto de 95% de SOC, o sistema reduz gradualmente a potência (curva CC-CV). Com menos calor e menos estresse nas células, a bateria degrada mais devagar e dura mais. Uma bateria que dura mais é uma bateria que não precisa ser fabricada e descartada antes da hora, o que reduz extração de minerais, consumo de energia de fabricação e resíduo eletrônico.
+2. **Potência entregue a quem precisa dela.** O rateio por SOC dá 11,0 kW ao carro com 34% de bateria e apenas 3,7 kW ao carro com 94%, que já não consegue absorver muita potência. A capacidade limitada da instalação (32 a 40 kW) é usada onde rende mais, em vez de ficar parada em um veículo quase cheio. O resultado é menos tempo de ocupação por vaga e menos desperdício de capacidade elétrica contratada.
+3. **Solar-First e bateria de apoio.** Consumir primeiro a energia gerada no local reduz a energia puxada da rede, principalmente nos picos, e usa uma fonte limpa de forma direta. O armazenamento SEC1000S guarda o excedente em vez de perdê-lo.
+4. **Nenhuma obra de ampliação da rede.** Como o software gerencia a demanda dentro do limite existente, o shopping não precisa trocar disjuntor, quadro ou cabeamento para instalar 4 carregadores. Isso evita materiais (cobre, aço, concreto) e a intervenção civil que uma ampliação exigiria.
+5. **Menos hardware e menos deslocamento.** A identificação por EVCCID dispensa câmeras e leitores de placa em cada vaga, e a telemetria remota permite diagnosticar e operar a estação sem visitas técnicas para tarefas rotineiras.
+
+### 9.2 Impactos objetivos
+
+| Dimensão | Impacto | Base |
+|---|---|---|
+| **Viabilidade técnica** | Quatro veículos de 11 kW operam em um quadro de 40 kW, com a demanda mantida em 32 kW | Medido no protótipo (6.1) |
+| **Ganho de eficiência** | −27,3% de pico de demanda e +37,5% de potência para o veículo mais descarregado, em comparação com uma divisão igualitária | Calculado sobre dados medidos (6.3) |
+| **Pegada de carbono (energia)** | ≈ 632 kg CO₂/ano evitados pelo uso de energia solar em 16.425 kWh | Estimativa com fator MCTI 2023 (6.3) |
+| **Pegada de carbono (mobilidade)** | ≈ 40 t CO₂/ano a menos do que abastecer os mesmos 600 km/dia com gasolina | Estimativa (6.3) |
+| **Viabilidade econômica** | Payback de 14 meses e receita líquida de R$ 4.455/mês | Calculado (6.2) |
+| **Relevância social** | Dá a shoppings, academias e centros comerciais um caminho barato para oferecer recarga, ampliando o acesso a eletromobilidade; a privacidade por arquitetura protege os dados dos motoristas (LGPD) | Seções 4.1.B e 5 |
+
+### 9.3 Limitações e leitura crítica dos números
+
+- **Parte dos resultados vem de simulação.** O rateio, o SOC e a telemetria foram validados no protótipo com ESP32 no Wokwi e no dashboard, e não em uma estação com quatro veículos reais em operação contínua. Os números de energia, CO₂ e receita são estimativas baseadas em premissas (90 kWh/dia, 50% solar).
+- **O ganho de CO₂ da energia solar é modesto.** A rede brasileira já é muito limpa (38,5 kg CO₂/MWh em 2023, segundo o MCTI), então trocar rede por sol evita pouco CO₂ (≈ 0,6 t/ano). O ganho ambiental grande vem de a estação viabilizar a mobilidade elétrica no lugar da gasolina, e esse benefício é compartilhado com o próprio veículo elétrico, não só com o ChargeGrid.
+- **O benefício de longevidade da bateria é qualitativo.** Reduzir potência em SOC alto é uma prática reconhecida de proteção de baterias, mas o projeto não mediu degradação real ao longo do tempo.
+- **O payback depende das premissas.** Se o volume diário vendido for menor que 90 kWh ou a margem cair abaixo de R$ 1,65/kWh, o retorno passa de 14 meses.
+- **Próximos passos naturais:** validar a estação com veículos reais, medir degradação e autoconsumo solar ao longo de semanas e ajustar o modelo de tarifação com dados de uso.
+
+### 9.4 Inovação
+
+A inovação do projeto está em combinar, em uma só solução, hardware GoodWe existente, algoritmos de gestão de potência e uma jornada completa de cobrança, resolvendo o gargalo físico (44 kW contra 40 kW) com software e não com obra. Os diferenciais estão detalhados na seção 10.
+
+---
+
+## 10. Diferenciais Inovadores
+
+| Diferencial | O que o sistema faz |
+|---|---|
+| **Algoritmos inteligentes** | Rateio proporcional por SOC; redução gradual de potência em SOC alto (CC-CV); distribuição Solar-First; previsão de geração e demanda para os próximos 60 minutos (GoodWezinho AI). |
+| **Automações avançadas** | Liberação automática do hardware após o pagamento (`liberado`), encerramento ao atingir a meta de carga, comandos globais da estação e relés acionados pelo ESP32 em resposta à nuvem. |
+| **Interface amigável** | Aplicativo com mapa de estações, rota via Waze, tela de progresso em tempo real, tarifa visível, pagamento via Pix e botão de interrupção manual; dashboard B2B com controles por vaga. |
+| **Visualização de dados** | Dashboard com geração solar, demanda total, limite do disjuntor e estado de cada vaga; barras de potência por vaga; gráfico de previsão de geração e demanda; telemetria de SOC, kW, corrente e kWh no aplicativo. |
+| **Assistente virtual** | O GoodWezinho AI está integrado ao EVSE Manager B2B e entrega recomendações de carga ao operador, como a distribuição Solar-First e o ajuste de rateio. |
+| **Privacidade e segurança por arquitetura** | Identificação por EVCCID e certificados PKI, sem câmeras nem leitura de placa; Firebase Authentication com e-mail verificado; Security Rules que isolam o dado de cada motorista. |
+
+---
+
+## 11. Referências e Conexões com Frameworks, Ferramentas, Linguagens e Sensores
+
+### 11.1 Linguagens
+
+| Linguagem | Uso no projeto |
+|---|---|
+| **C++ (Arduino/ESP32)** | Firmware do ESP32: leitura de sensores, lógica de rateio, comunicação com o Firebase e acionamento dos relés (`chargegrid/`) |
+| **HTML, CSS e JavaScript** | Dashboard web GOODWE EVSE Manager B2B (`site/index.html`, `style.css`, `app.js`) |
+| **Python** | Lógica de otimização do rateio e módulo preditivo GoodWezinho AI, conforme a disciplina de Pensamento Computacional e Automação |
+
+### 11.2 Frameworks, plataformas e ferramentas
+
+| Ferramenta | Função |
+|---|---|
+| **Firebase Realtime Database** | Sincronização em tempo real entre ESP32, aplicativo e dashboard |
+| **Firebase Authentication** | Login de motoristas com verificação obrigatória por e-mail |
+| **Firebase Security Rules** | Isolamento dos dados por `auth.uid` (`/users/{uid}` e `/recargas/{uid}`) |
+| **Wokwi** | Simulação do circuito com ESP32 (`diagram.json`) |
+| **Waze** | Rota do motorista até a estação |
+| **Pix** | Meio de pagamento demonstrado no checkout |
+| **GitHub** | Versionamento do código-fonte, diagramas e documentação |
+
+### 11.3 Hardware e equipamentos GoodWe
+
+| Equipamento | Papel |
+|---|---|
+| Inversor híbrido GoodWe | Gerencia o fluxo entre painéis, bateria, carregadores e rede, e mede a geração solar |
+| Bateria GoodWe SEC1000S | Armazena o excedente solar para horários de pico ou baixa geração |
+| Carregadores GoodWe linha HCA G2 | Entregam energia e identificam o veículo via CCS |
+| Aplicação SEMS | Monitoramento do ecossistema GoodWe integrado ao aplicativo |
+
+### 11.4 Sensores e atuadores (protótipo de bancada)
+
+| Componente | O que emula ou controla |
+|---|---|
+| Potenciômetros | Variação do SOC e da demanda solicitada em cada uma das 4 vagas |
+| Push buttons | Conexão e desconexão física do cabo CCS |
+| Display LCD 16x2 | Dados locais da estação (`11.0/40.0kW - Vagas 1/4 SOLAR`) |
+| Relés | Liberação da energia ao veículo após o pagamento |
+
+Em uma instalação real, a medição de potência por vaga e a geração solar vêm do inversor e dos carregadores GoodWe; no protótipo, esses sinais são emulados pelos componentes acima.
+
+### 11.5 Padrões, protocolos e normas
+
+- **ISO 15118** (*Plug & Charge*), **CCS** e **EVCCID**, para identificação e comunicação segura entre veículo e carregador.
+- **OCPP** (Open Charge Point Protocol), para interoperabilidade com carregadores comerciais.
+- **Resolução Normativa ANEEL nº 1.000/2021**, referência para a lógica de tarifação e uso da rede.
+- **LGPD**, que orienta a privacidade por arquitetura.
+
+### 11.6 Fontes dos dados de sustentabilidade
+
+- Fator de emissão do SIN em 2023 (38,5 kg CO₂/MWh), divulgado pelo MCTI: [O Setor Elétrico](https://www.osetoreletrico.com.br/?p=159478)
+- Fator de emissão do SIN em abril de 2025 (28,9 kg CO₂/MWh), publicado no SIRENE/MCTI: [Cenário Energia](https://cenarioenergia.com.br/2025/06/13/brasil-reduz-intensidade-de-carbono-na-geracao-eletrica-com-inclusao-de-novas-renovaveis-na-base-de-calculo-oficial/)
+- Fator de emissão da gasolina (2,23 kg CO₂/L): [AutoData, junho de 2026](https://www.autodata.com.br/revistas/flipbook/433-2026-06/36/)
+
+---
+
+## 12. Critérios de Avaliação Atendidos
+
+| Critério | Onde é atendido neste README |
+|---|---|
+| **Solução inovadora, funcional e integrada** | Seções 1, 2 e 4 (integração e funcionamento), 4.2 (interfaces entre os sistemas), 6 (resultados medidos e estimados) e 10 (diferenciais inovadores) |
+| **Justificativa alinhada à disciplina e à GoodWe** | Seções 3 e 5 (escolha dos equipamentos e das tecnologias), 7 (conteúdos da disciplina), 8 (alinhamento ao desafio GoodWe) e 9 (avaliação crítica de sustentabilidade e inovação) |
+| **Organização, documentação técnica e repositório** | Estrutura do repositório (`chargegrid/` e `site/`), diagramas e imagens reais do sistema na seção 4, referências e tecnologias na seção 11 |
 
 ---
 
