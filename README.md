@@ -5,6 +5,8 @@ Gerenciamento inteligente de demanda para estações de recarga de veículos el�
 > 🎥 <a href="https://youtu.be/ggT8hUnfNXI?si=upFxEk8xvHdklanF">**Clique aqui para ver o vídeo pitch!**</a> 
 
 > 🏫 **Disciplina: Pensamento Computacional e Automação com Python e Soluções em Energias Renováveis e Sustentáveis** / **Sprint 4 — Solução Final Integrada e Inovadora GoodWe**
+
+> 🧪 **Escopo do projeto final:** a aplicação prática do projeto é a **simulação integrada** — circuito ESP32 no Wokwi, Firebase, dashboard B2B e aplicativo do motorista — apresentada como **projeto final da Sprint 4**. Não foi construída maquete física; toda a validação acontece no ambiente simulado.
  
 ---
  
@@ -49,9 +51,10 @@ Foi para resolver exatamente esse obstáculo que a **GoodWe desenvolveu uma solu
 
 A solução integra, em um único ecossistema, três camadas que atuam em conjunto:
  
-**Camada física (energia):**
+**Camada física (energia) — arquitetura de referência da estação:**
 - Painéis solares → **Inversor híbrido GoodWe** → **Sistema de armazenamento em bateria (GoodWe SEC1000S)** → Quadro de distribuição do estacionamento → **4 carregadores, linha HCA G2 da GoodWe**, um por vaga.
 - O inversor mede em tempo real a geração solar e decide, automaticamente, se a energia entregue aos carregadores vem do sol, da bateria ou da rede elétrica (fonte complementar).
+- No projeto final, o comportamento dessa camada é **representado pela simulação** (seção 4.1.C): potenciômetros, botões e display do circuito no Wokwi emulam o SOC, a demanda e a conexão do cabo de cada vaga.
 
 **Camada de identificação e cobrança (por vaga/veículo):**
 - **Etapa 1 – Veículo:** o carro chega e se identifica pelo próprio cabo de recarga, padrão **CCS + EVCCID** (identificador único do veículo, ex.: `A4:F2:1B:8C:03:9E`), sem necessidade de leitura de placa ou câmeras.
@@ -62,7 +65,7 @@ A solução integra, em um único ecossistema, três camadas que atuam em conjun
 - Todos os dados de geração, consumo por vaga, SOC (estado de carga) do veículo e tarifa são sincronizados pelo Firebase ao **GOODWE EVSE Manager B2B**, um dashboard web que centraliza o monitoramento e o controle remoto (comandos "Iniciar"/"Parar" por vaga e comandos globais da estação).
 - Um aplicativo mobile (integrado ao SEM) permite ao motorista localizar carregadores próximos via Waze, identificar o equipamento pelo nome e acompanhar a recarga em tempo real.
 
-A demonstração do vídeo mostra justamente essa cadeia funcionando de ponta a ponta: da geração solar no inversor, passando pela alocação de potência entre as 4 vagas, até a cobrança do motorista no aplicativo.
+A demonstração do vídeo mostra essa cadeia funcionando de ponta a ponta: da geração solar no inversor, passando pela alocação de potência entre as 4 vagas, até a cobrança do motorista no aplicativo, com a camada de carregamento representada pela simulação.
  
 ---
  
@@ -123,7 +126,7 @@ Esse é um **comando automatizado real**: o algoritmo prioriza veículos com men
  
 ### 2.4 Simulação de hardware (protótipo)
  
-Na bancada de simulação pelo aplicativo Woke ("ChargeGrid conectando..."), o protótipo demonstra o comportamento do sistema de bateria/carregador em funcionamento, com telas de celular mostrando o **percentual de carga evoluindo (69% → 70%)** durante a demonstração — validando que a lógica de controle responde a dados em tempo real, e não apenas a uma interface estática.
+Na simulação feita no Wokwi ("ChargeGrid conectando..."), que é a aplicação prática do projeto físico, o protótipo demonstra o comportamento do sistema de bateria/carregador em funcionamento, com telas de celular mostrando o **percentual de carga evoluindo (69% → 70%)** durante a demonstração — validando que a lógica de controle responde a dados em tempo real, e não apenas a uma interface estática.
  
 ---
  
@@ -145,7 +148,7 @@ Na bancada de simulação pelo aplicativo Woke ("ChargeGrid conectando..."), o p
  
 ## 4. Arquitetura da Solução e Fluxo de Carregamento
 
-O fluxo de funcionamento descreve a jornada completa desde a chegada do veículo elétrico à vaga até o encerramento da sessão de carga, integrando a bancada física (simulada via ESP32), o backend em nuvem (Firebase) e a interface mobile do motorista.
+O fluxo de funcionamento descreve a jornada completa desde a chegada do veículo elétrico à vaga até o encerramento da sessão de carga, integrando a bancada simulada (ESP32 no Wokwi), o backend em nuvem (Firebase) e a interface mobile do motorista.
 
 
 <img width="1580" height="889" alt="Fluxo de carregamento goodwe" src="https://github.com/user-attachments/assets/08140eef-bae4-48f3-9da4-86a723c66cc7" />
@@ -193,7 +196,9 @@ O aplicativo entrega a experiência completa do motorista de veículos elétrico
 | :---: | :---: | :---: |
 | <img width="372" height="679" alt="image" src="https://github.com/user-attachments/assets/4f028cb6-3ec1-4697-b3da-80672d1c02c5" /> | <img width="359" height="719" alt="image" src="https://github.com/user-attachments/assets/6c7db1cb-7942-4d05-9f79-f03ad91e1ff7" /> | <img width="358" height="716" alt="image" src="https://github.com/user-attachments/assets/1c8a0a19-4565-48e3-b1e6-774689e0b4db" /> |
 
-#### C. Simulação de Hardware de Bancada (ESP32 via Wokwi)
+#### C. Simulação do Projeto Físico — Projeto Final (ESP32 via Wokwi)
+Esta simulação é a **aplicação do projeto físico** e o **projeto final** apresentado na Sprint 4: a equipe optou por não construir uma maquete física e validar todo o sistema no ambiente simulado, integrado ao Firebase, ao dashboard B2B e ao aplicativo do motorista.
+
 Para homologação das regras de *Load Balancing* e protocolo de comunicação, foi desenvolvido um circuito emulador no **Wokwi** controlado por um **ESP32**:
 - **Potenciômetros:** Emulam a variação do estado de carga (SOC) e da demanda solicitada em cada uma das 4 vagas.
 - **Push Buttons:** Simulam a conexão/desconexão física do cabo CCS no veículo.
@@ -203,13 +208,15 @@ Para homologação das regras de *Load Balancing* e protocolo de comunicação, 
 
 <img width="771" height="522" alt="image" src="https://github.com/user-attachments/assets/55349b7f-9b4c-4b5b-ae70-c50c95e4f244" />
 
+> 🎥 <a href="https://youtu.be/Hw6AFMonDSs">**Clique aqui para ver o vídeo do projeto em prática!**</a> 
+
 ### 4.2 Integração entre os Sistemas
 
-Na solução final, cada sistema conversa com os demais por uma interface bem definida. O **Firebase** funciona como ponto central de sincronização, e é isso que permite que a bancada, o painel B2B e o aplicativo reajam ao mesmo dado ao mesmo tempo:
+Na solução final, cada sistema conversa com os demais por uma interface bem definida. O **Firebase** funciona como ponto central de sincronização, e é isso que permite que a simulação do ESP32, o painel B2B e o aplicativo reajam ao mesmo dado ao mesmo tempo:
 
 | Origem ➔ Destino | Interface / Protocolo | O que trafega |
 | --- | --- | --- |
-| Veículo ➔ Carregador (HCA G2 / ESP32 na bancada) | CCS + ISO 15118 (EVCCID) | Identificação do veículo, conexão física do cabo |
+| Veículo ➔ Carregador (HCA G2 / ESP32 na simulação) | CCS + ISO 15118 (EVCCID) | Identificação do veículo, conexão física do cabo |
 | ESP32 ➔ Firebase | Firebase Realtime Database | Sessão de recarga (`pendente` / `liberado`), SOC, potência, corrente, kWh acumulado |
 | Firebase ➔ ESP32 | Escuta em tempo real | Liberação da sessão e comandos de Iniciar/Parar, que acionam os relés |
 | Aplicativo do motorista ↔ Firebase | Firebase Authentication + Realtime Database | Login verificado por e-mail, confirmação de Pix, telemetria da recarga, interrupção manual |
@@ -237,9 +244,9 @@ A seleção das tecnologias adotadas no projeto **ChargeGrid Intelligence** aten
 
 ## 6. Resultados e Dados Funcionais Apresentados
 
-O protótipo integrado do ChargeGrid Intelligence demonstrou capacidade total de resolução do problema físico de sobrecarga elétrica, além de apresentar viabilidade comercial atrativa para os estabelecimentos B2B.
+A simulação integrada do ChargeGrid Intelligence (projeto final) demonstrou capacidade total de resolução do problema físico de sobrecarga elétrica, além de apresentar viabilidade comercial atrativa para os estabelecimentos B2B.
 
-### 6.1 Resultados de Desempenho Técnico
+### 6.1 Resultados de Desempenho Técnico (obtidos na simulação)
 * **Mitigação do Excedente:** Em cenários de estresse máximo (4 veículos de 11 kW tentando consumir 44 kW em um painel de 40 kW), a automação de rateio reduziu a demanda ativa para **32,0 kW**, operando com **100% de margem de segurança** em relação ao disjuntor.
 * **Priorização Inteligente:** Veículos com bateria crítica (SOC em 34%) mantiveram taxa máxima de recarga (11,0 kW), enquanto veículos em nível avançado (SOC > 88%) sofreram modulação automática para 3,7 kW - 6,3 kW.
 
@@ -254,12 +261,12 @@ A validação do modelo financeiro para a instalação de uma estação de 4 vag
 
 ### 6.3 Resultados Quantitativos de Eficiência e Sustentabilidade
 
-Os números abaixo combinam **dados medidos no protótipo** (potência, rateio, limite do disjuntor) com **estimativas calculadas** a partir das premissas do modelo financeiro (90 kWh vendidos por dia · 50% da energia vinda do sol · margem média de R$ 1,65/kWh). As estimativas estão identificadas como tal e a memória de cálculo está logo abaixo da tabela.
+Os números abaixo combinam **dados medidos na simulação** (potência, rateio, limite do disjuntor) com **estimativas calculadas** a partir das premissas do modelo financeiro (90 kWh vendidos por dia · 50% da energia vinda do sol · margem média de R$ 1,65/kWh). As estimativas estão identificadas como tal e a memória de cálculo está logo abaixo da tabela.
 
 | Indicador | Resultado | Tipo |
 |---|---|---|
-| Demanda sem gerenciamento | 44 kW (**110%** do limite de 40 kW) | Medido no protótipo |
-| Demanda com rateio automático | 32 kW (**80%** do limite, com 8 kW de folga) | Medido no protótipo |
+| Demanda sem gerenciamento | 44 kW (**110%** do limite de 40 kW) | Medido na simulação |
+| Demanda com rateio automático | 32 kW (**80%** do limite, com 8 kW de folga) | Medido na simulação |
 | Redução de pico de demanda | **−27,3%** (44 kW → 32 kW) | Calculado sobre dado medido |
 | Taxa de recarga do veículo mais descarregado (SOC 34%) | 11,0 kW contra 8,0 kW numa divisão igualitária (**+37,5%**) | Calculado sobre dado medido |
 | Energia entregue por ano | 32.850 kWh | Estimativa |
@@ -342,7 +349,7 @@ A ideia central de sustentabilidade do ChargeGrid é simples: **recarregar de fo
 
 | Dimensão | Impacto | Base |
 |---|---|---|
-| **Viabilidade técnica** | Quatro veículos de 11 kW operam em um quadro de 40 kW, com a demanda mantida em 32 kW | Medido no protótipo (6.1) |
+| **Viabilidade técnica** | Quatro veículos de 11 kW operam em um quadro de 40 kW, com a demanda mantida em 32 kW | Medido na simulação (6.1) |
 | **Ganho de eficiência** | −27,3% de pico de demanda e +37,5% de potência para o veículo mais descarregado, em comparação com uma divisão igualitária | Calculado sobre dados medidos (6.3) |
 | **Pegada de carbono (energia)** | ≈ 632 kg CO₂/ano evitados pelo uso de energia solar em 16.425 kWh | Estimativa com fator MCTI 2023 (6.3) |
 | **Pegada de carbono (mobilidade)** | ≈ 40 t CO₂/ano a menos do que abastecer os mesmos 600 km/dia com gasolina | Estimativa (6.3) |
@@ -351,11 +358,11 @@ A ideia central de sustentabilidade do ChargeGrid é simples: **recarregar de fo
 
 ### 9.3 Limitações e leitura crítica dos números
 
-- **Parte dos resultados vem de simulação.** O rateio, o SOC e a telemetria foram validados no protótipo com ESP32 no Wokwi e no dashboard, e não em uma estação com quatro veículos reais em operação contínua. Os números de energia, CO₂ e receita são estimativas baseadas em premissas (90 kWh/dia, 50% solar).
+- **O projeto final é uma simulação.** O rateio, o SOC e a telemetria foram validados na simulação (ESP32 no Wokwi integrado ao Firebase, ao dashboard e ao aplicativo), sem maquete física e sem uma estação com veículos reais. Os números de energia, CO₂ e receita são estimativas baseadas em premissas (90 kWh/dia, 50% solar).
 - **O ganho de CO₂ da energia solar é modesto.** A rede brasileira já é muito limpa (38,5 kg CO₂/MWh em 2023, segundo o MCTI), então trocar rede por sol evita pouco CO₂ (≈ 0,6 t/ano). O ganho ambiental grande vem de a estação viabilizar a mobilidade elétrica no lugar da gasolina, e esse benefício é compartilhado com o próprio veículo elétrico, não só com o ChargeGrid.
 - **O benefício de longevidade da bateria é qualitativo.** Reduzir potência em SOC alto é uma prática reconhecida de proteção de baterias, mas o projeto não mediu degradação real ao longo do tempo.
 - **O payback depende das premissas.** Se o volume diário vendido for menor que 90 kWh ou a margem cair abaixo de R$ 1,65/kWh, o retorno passa de 14 meses.
-- **Próximos passos naturais:** validar a estação com veículos reais, medir degradação e autoconsumo solar ao longo de semanas e ajustar o modelo de tarifação com dados de uso.
+- **Escopo do projeto:** a aplicação prática permanece na simulação. Testes em campo (veículos reais, medição de degradação e de autoconsumo solar) estão fora do escopo deste projeto.
 
 ### 9.4 Inovação
 
@@ -407,7 +414,9 @@ A inovação do projeto está em combinar, em uma só solução, hardware GoodWe
 | Carregadores GoodWe linha HCA G2 | Entregam energia e identificam o veículo via CCS |
 | Aplicação SEMS | Monitoramento do ecossistema GoodWe integrado ao aplicativo |
 
-### 11.4 Sensores e atuadores (protótipo de bancada)
+Esses equipamentos formam a arquitetura de referência da estação; no projeto final, o comportamento deles é representado na simulação.
+
+### 11.4 Sensores e atuadores (componentes simulados no Wokwi)
 
 | Componente | O que emula ou controla |
 |---|---|
@@ -416,7 +425,7 @@ A inovação do projeto está em combinar, em uma só solução, hardware GoodWe
 | Display LCD 16x2 | Dados locais da estação (`11.0/40.0kW - Vagas 1/4 SOLAR`) |
 | Relés | Liberação da energia ao veículo após o pagamento |
 
-Em uma instalação real, a medição de potência por vaga e a geração solar vêm do inversor e dos carregadores GoodWe; no protótipo, esses sinais são emulados pelos componentes acima.
+Na arquitetura de referência de uma instalação real, a medição de potência por vaga e a geração solar vêm do inversor e dos carregadores GoodWe; na simulação do projeto final, esses sinais são emulados pelos componentes virtuais acima.
 
 ### 11.5 Padrões, protocolos e normas
 
@@ -439,7 +448,7 @@ Em uma instalação real, a medição de potência por vaga e a geração solar 
 |---|---|
 | **Solução inovadora, funcional e integrada** | Seções 1, 2 e 4 (integração e funcionamento), 4.2 (interfaces entre os sistemas), 6 (resultados medidos e estimados) e 10 (diferenciais inovadores) |
 | **Justificativa alinhada à disciplina e à GoodWe** | Seções 3 e 5 (escolha dos equipamentos e das tecnologias), 7 (conteúdos da disciplina), 8 (alinhamento ao desafio GoodWe) e 9 (avaliação crítica de sustentabilidade e inovação) |
-| **Organização, documentação técnica e repositório** | Estrutura do repositório (`chargegrid/` e `site/`), diagramas e imagens reais do sistema na seção 4, referências e tecnologias na seção 11 |
+| **Organização, documentação técnica e repositório** | Estrutura do repositório (`chargegrid/` e `site/`), diagramas e prints reais do sistema simulado na seção 4, referências e tecnologias na seção 11 |
 
 ---
 
@@ -447,4 +456,6 @@ Em uma instalação real, a medição de potência por vaga e a geração solar 
 
 O projeto **ChargeGrid Intelligence** comprova que a transformação de equipamentos de linha residencial/comercial GoodWe em uma rede B2B inteligente de recarga é plenamente viável, segura e altamente rentável.
 
-Através do alinhamento entre a camada física de potência (Inversores Híbridos, Baterias SEC1000S e Wallboxes HCA G2), a eletrônica embarcada (ESP32 via ISO 15118) e a nuvem B2B (Firebase/EVSE Manager), eliminou-se o gargalo físico de sobrecarga sem a necessidade de obras dispendiosas de ampliação da rede elétrica. A solução promove a sustentabilidade energética, maximiza a utilização de fontes renováveis e oferece uma jornada fluida e segura para o usuário final e para o operador comercial.
+Através do alinhamento entre a camada física de potência (Inversores Híbridos, Baterias SEC1000S e Wallboxes HCA G2), a eletrônica embarcada (ESP32 via ISO 15118) e a nuvem B2B (Firebase/EVSE Manager), eliminou-se, na simulação, o gargalo físico de sobrecarga sem a necessidade de obras dispendiosas de ampliação da rede elétrica. A solução promove a sustentabilidade energética, maximiza a utilização de fontes renováveis e oferece uma jornada fluida e segura para o usuário final e para o operador comercial.
+
+Como projeto final da Sprint 4, a aplicação prática do ChargeGrid é a **simulação integrada** (ESP32 no Wokwi, Firebase, dashboard B2B e aplicativo do motorista), que se mantém como o ambiente de validação do projeto.
