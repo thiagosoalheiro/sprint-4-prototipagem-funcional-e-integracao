@@ -25,11 +25,12 @@ Gerenciamento inteligente de demanda para estações de recarga de veículos el�
 
 ## 📂 Estrutura do Repositório
 
+---
 | Pasta | Conteúdo |
 |---|---|
+| [`app_integrado/`](app_integrado/) | Aplicação web completa (HTML, CSS, JavaScript) |
 | [`chargegrid/`](chargegrid/) | Firmware ESP32 (C++) e `diagram.json` do circuito simulado no Wokwi |
-| [`site/`](site/) | Dashboard web GOODWE EVSE Manager B2B (`index.html`, `style.css`, `app.js`) integrado ao Firebase |
-
+| [`site/`](site/) | Dashboard web GOODWE EVSE Manager B2B (`index.html`, `style.css`, `app.js` em HTML, CSS e JavaScript) |
 ---
 
 ## 🧩 O Desafio / Problema
@@ -191,6 +192,8 @@ O aplicativo entrega a experiência completa do motorista de veículos elétrico
 * **Localização & Status:** Mapa interativo das estações (ex: Shopping Vila Olímpia) com rotas integradas via Waze e indicação de ocupação das vagas.
 * **Acompanhamento Real-Time:** Exibição contínua da potência instantânea (kW), progresso da bateria (%), tempo decorrido e botão de **Interrupção Manual** da sessão.
 * **Checkout Desacoplado:** Telas de confirmação de pagamento automatizado via Pix antes da liberação do hardware pelo ESP32.
+
+> 💻 Código-fonte: [`app_integrado/`](app_integrado/) (HTML, CSS, JavaScript)
 
 | Navegação e Mapa de Carregadores | Progresso do Carregamento em Tempo Real | Confirmação de Pagamento Automatizado |
 | :---: | :---: | :---: |
@@ -448,7 +451,7 @@ Na arquitetura de referência de uma instalação real, a medição de potência
 |---|---|
 | **Solução inovadora, funcional e integrada** | Seções 1, 2 e 4 (integração e funcionamento), 4.2 (interfaces entre os sistemas), 6 (resultados medidos e estimados) e 10 (diferenciais inovadores) |
 | **Justificativa alinhada à disciplina e à GoodWe** | Seções 3 e 5 (escolha dos equipamentos e das tecnologias), 7 (conteúdos da disciplina), 8 (alinhamento ao desafio GoodWe) e 9 (avaliação crítica de sustentabilidade e inovação) |
-| **Organização, documentação técnica e repositório** | Estrutura do repositório (`chargegrid/` e `site/`), diagramas e prints reais do sistema simulado na seção 4, referências e tecnologias na seção 11 |
+| **Organização, documentação técnica e repositório** | Estrutura do repositório (`chargegrid/`, `site/` e `app_integrado/`), diagramas e prints reais do sistema simulado na seção 4, referências e tecnologias na seção 11 |
 
 ---
 
