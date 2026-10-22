@@ -233,6 +233,8 @@ Indicadores de descarbonização, medição de CO2 evitado em relação a combus
 
 *Figura 6: Indicadores ambientais, economia de CO2 e métricas Solar-First.*
 
+> 🕹 *Baixe a pasta [`site/`](site) e abra `index.html` no navegador para rodar o site localmente!*
+
 ---
 
 #### B. Aplicativo Mobile do Motorista (Integrado ao SEMS e Firebase)
@@ -258,6 +260,8 @@ O aplicativo entrega a experiência completa do motorista de veículos elétrico
 | :---: | :---: | :---: |
 | <img width="372" height="679" alt="image" src="https://github.com/user-attachments/assets/4f028cb6-3ec1-4697-b3da-80672d1c02c5" /> | <img width="359" height="719" alt="image" src="https://github.com/user-attachments/assets/6c7db1cb-7942-4d05-9f79-f03ad91e1ff7" /> | <img width="358" height="716" alt="image" src="https://github.com/user-attachments/assets/1c8a0a19-4565-48e3-b1e6-774689e0b4db" /> |
 
+> 🕹 **Baixe o aplicativo para Android:** [`app_integrado/GoodWe-SEMS-Integrado-debug.apk`](app_integrado/GoodWe-SEMS-Integrado-debug.apk)
+
 #### C. Simulação do Projeto Físico — Projeto Final (ESP32 via Wokwi)
 Esta simulação é a **aplicação do projeto físico** e o **projeto final** apresentado na Sprint 4: a equipe optou por não construir uma maquete física e validar todo o sistema no ambiente simulado, integrado ao Firebase, ao dashboard B2B e ao aplicativo do motorista.
 
@@ -271,6 +275,8 @@ Para homologação das regras de *Load Balancing* e protocolo de comunicação, 
 <img width="771" height="522" alt="image" src="https://github.com/user-attachments/assets/55349b7f-9b4c-4b5b-ae70-c50c95e4f244" />
 
 > 🎥 <a href="https://youtu.be/Hw6AFMonDSs">**Clique aqui para ver o vídeo do projeto em prática!**</a> 
+
+> 🕹 <a href="https://wokwi.com/projects/478612851667830785">**Clique aqui para testar você mesmo!**</a>
 
 ### 4.2 Integração entre os Sistemas
 
