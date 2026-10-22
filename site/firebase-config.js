@@ -1,16 +1,3 @@
-/* ============================================================
-   Conexão com o Firebase (opcional)
-   ------------------------------------------------------------
-   Sem configuração, o site roda em "Simulação local": todo o
-   comportamento (rateio, CC-CV, Solar-First, tarifa) é calculado
-   no próprio navegador, para demonstração.
-
-   Para ler a telemetria real do ESP32 (Wokwi) e enviar comandos:
-   1) Cole abaixo o objeto firebaseConfig do seu projeto
-      (Console do Firebase > Configurações do projeto > Seus apps).
-   2) Ajuste CHARGEGRID_PATHS para os caminhos usados no seu
-      Realtime Database.
-   ============================================================ */
 window.CHARGEGRID_FIREBASE = {
   apiKey: "AIzaSyCU1M_zmx5zqqrEc-L0JxujcyOSX0oq5KY",
   authDomain: "goodwedb.firebaseapp.com",
