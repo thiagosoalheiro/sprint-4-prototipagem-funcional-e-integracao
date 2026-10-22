@@ -170,11 +170,70 @@ O fluxo de funcionamento descreve a jornada completa desde a chegada do veículo
 ### 4.1 Interfaces e Protótipos Funcionais
 
 #### A. Painel Web de Gestão B2B (`GOODWE EVSE Manager B2B`)
-O painel de controle executivo (Web Dashboard) sincroniza via **Firebase** os parâmetros de operação do estacionamento. Ele exibe os indicadores de geração solar real-time, demanda total da estação e o teto do disjuntor. Além disso, disponibiliza os seletores para acionamento ou interrupção do carregamento por vaga individual e comandos globais da estação.
 
-> 💻 Código-fonte: [`site/`](site/) (`index.html`, `style.css`, `app.js`)
+O painel de controle executivo (Web Dashboard) sincroniza em tempo real via **Firebase** todos os parâmetros de operação da estação. Ele exibe a geração solar instantânea, a demanda total solicitada e o limite do disjuntor. Além disso, oferece controle individualizado por vaga e comandos globais para a gestão da estação.
 
-<img width="1437" height="849" alt="image" src="https://github.com/user-attachments/assets/f8a38790-6f95-410d-8c04-bf20e8f7e46e" />
+> 💻 **Código-fonte:** [`site/`](site/) (`index.html`, `style.css`, `app.js`)
+
+---
+
+##### 1. Dashboard Principal (Visão Geral da Estação)
+Visão consolidada do fluxo de energia, balanço entre geração solar e rede elétrica, além do status individual de cada vaga em tempo real.
+
+<img width="1600" height="900" alt="Dashboard Principal" src="https://github.com/user-attachments/assets/7a66f797-6f3a-4eb8-89f2-2bbc32c5ae5a" />
+
+*Figura 1: Dashboard em tempo real com balanço energético e monitoramento de vagas.*
+
+---
+
+##### 2. Controle de Vagas & Simulador ESP32
+Painel de controle de vagas acoplado ao simulador de entradas de telemetria do ESP32 (integrado via Wokwi).
+
+<img width="1600" height="900" alt="Simulador ESP32 e Controle de Vagas" src="https://github.com/user-attachments/assets/347f2537-9a9d-4070-9c3e-b31a89b8c8e4" />
+
+*Figura 2: Controles individuais por vaga e painel de testes do simulador ESP32.*
+
+---
+
+##### 3. Recomendações Preditivas (`GoodWezinho AI`)
+Motor de inteligência com recomendações automáticas de alocação de potência e curva de demanda estimada para os próximos 60 minutos.
+
+<img width="1600" height="900" alt="Recomendações Preditivas" src="https://github.com/user-attachments/assets/4012ee21-6bdb-419d-b66f-3e44b50c6058" />
+
+*Figura 3: Recomendações em tempo real e gráfico preditivo de carga e tarifação.*
+
+---
+
+##### 4. Assistente Virtual (`GoodWezinho AI Chat`)
+Interface de bate-papo interativa para consultas operacionais, explicações sobre distribuição de energia e métricas de sustentabilidade.
+
+<img width="1600" height="900" alt="WhatsApp Image 2026-10-21 at 20 37 12 (1)" src="https://github.com/user-attachments/assets/8d2b3318-3cb6-4bda-8530-ce32f2e880d7" />
+
+*Figura 4: Esclarecimento de dúvidas operacionais e técnicas via IA.*
+
+<img width="1600" height="900" alt="GoodWezinho AI - Interface de Chat" src="https://github.com/user-attachments/assets/d786ecf1-25f0-4c2a-9116-faf8a3a065cb" />
+
+*Figura 4.1: Recomendações preditivas de carga e pricing via IA.*
+
+---
+
+##### 5. Faturamento e Modelo Financeiro
+Painel executivo focado na receita das sessões, composição das tarifas por kWh, detalhamento financeiro por vaga e cálculo de *payback*.
+
+<img width="1600" height="900" alt="Painel de Faturamento" src="https://github.com/user-attachments/assets/d94cd12f-225e-4996-ba81-25bf62bcd701" />
+
+*Figura 5: Módulo financeiro com divisão por vaga e métricas de retorno sobre investimento.*
+
+---
+
+##### 6. Sustentabilidade e Impacto Ambiental
+Indicadores de descarbonização, medição de CO2 evitado em relação a combustíveis fósseis e preservação da vida útil das baterias dos veículos.
+
+<img width="1600" height="900" alt="Dashboard de Sustentabilidade" src="https://github.com/user-attachments/assets/290a0cb8-a1c9-41a1-b14e-c589ef2042de" />
+
+*Figura 6: Indicadores ambientais, economia de CO2 e métricas Solar-First.*
+
+---
 
 #### B. Aplicativo Mobile do Motorista (Integrado ao SEMS e Firebase)
 
